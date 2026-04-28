@@ -1,7 +1,34 @@
+/**
+ * @fileoverview Playlist Manager
+ * Sistema di gestione playlist musicale lato browser.
+ * Permette inserimento, rimozione, preferiti, calcolo durata e rendering UI.
+ *
+ * NON modifica il DOM esterno, usa solo funzioni interne e render().
+ *
+ * @version 1.0.0
+ */
+
+// ==============================
+// STATO GLOBALE
+// ==============================
+
+/**
+ * Array contenente tutti i brani della playlist
+ * @type {Array<Object>}
+ */
 let playlist = [];
 
-// ================= CORE =================
+// ==============================
+// CORE FUNCTIONS
+// ==============================
 
+/**
+ * Aggiunge un nuovo brano alla playlist
+ *
+ * @param {string} titolo - Titolo del brano
+ * @param {string} artista - Nome artista
+ * @param {number} durata - Durata in secondi
+ */
 function inserisciBrano(titolo, artista, durata) {
   playlist.push({
     id: Date.now(),
@@ -12,21 +39,41 @@ function inserisciBrano(titolo, artista, durata) {
   });
 }
 
+/**
+ * Rimuove un brano dalla playlist tramite ID
+ *
+ * @param {number} id - ID del brano da eliminare
+ */
 function rimuoviBrano(id) {
   playlist = playlist.filter(b => b.id !== id);
 }
 
+/**
+ * Attiva/disattiva stato preferito di un brano
+ *
+ * @param {number} id - ID del brano
+ */
 function togglePreferito(id) {
   const b = playlist.find(x => x.id === id);
   if (b) b.preferito = !b.preferito;
 }
 
+/**
+ * Calcola la durata totale della playlist
+ *
+ * @returns {number} durata totale in secondi
+ */
 function calcolaDurataTotale() {
   return playlist.reduce((a, b) => a + b.durata, 0);
 }
 
-// ================= RENDER =================
+// ==============================
+// RENDER UI
+// ==============================
 
+/**
+ * Aggiorna la UI della playlist nel DOM
+ */
 function render() {
   const list = document.getElementById("playlist");
   const count = document.getElementById("playlist-count");
@@ -53,8 +100,13 @@ function render() {
   `).join("");
 }
 
-// ================= UI =================
+// ==============================
+// EVENTI UI
+// ==============================
 
+/**
+ * Gestione eventi bottoni sidebar
+ */
 document.querySelectorAll("[data-action]").forEach(btn => {
   btn.addEventListener("click", () => {
     const action = btn.dataset.action;
@@ -74,18 +126,24 @@ document.querySelectorAll("[data-action]").forEach(btn => {
     }
 
     if (action === "clear") {
-  playlist = [];
-  render();
+      playlist = [];
+      render();
 
-  const box = document.getElementById("total-duration");
-  box.classList.add("hidden");
-  box.textContent = "";
-}
+      // reset UI durata
+      const box = document.getElementById("total-duration");
+      box.classList.add("hidden");
+      box.textContent = "";
+    }
   });
 });
 
-// ================= FORM =================
+// ==============================
+// FORM HANDLER
+// ==============================
 
+/**
+ * Gestione submit form aggiunta brano
+ */
 document.getElementById("add-form").addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -100,9 +158,18 @@ document.getElementById("add-form").addEventListener("submit", (e) => {
   render();
 });
 
+/**
+ * Chiude il form di inserimento
+ */
 document.getElementById("cancel").addEventListener("click", () => {
   document.getElementById("add-form").classList.add("hidden");
 });
 
-// INIT
+// ==============================
+// INIT APP
+// ==============================
+
+/**
+ * Avvia l'applicazione
+ */
 render();
