@@ -86,18 +86,24 @@ function render() {
   }
 
   list.innerHTML = playlist.map(b => `
-    <div class="playlist-item ${b.preferito ? "favorite" : ""}">
-      <div>
-        <b>${b.titolo}</b> - ${b.artista}
-      </div>
-
-      <div>
-        ${b.durata}s
-        <button onclick="togglePreferito(${b.id}); render()">⭐</button>
-        <button onclick="rimuoviBrano(${b.id}); render()">❌</button>
-      </div>
+  <div class="playlist-item ${b.preferito ? "favorite" : ""}">
+    
+    <div>
+      <b>${b.titolo}</b> - ${b.artista}
     </div>
-  `).join("");
+
+    <div>
+      ${b.durata}s
+
+      <button onclick="spostaSu(${b.id})">⬆️</button>
+      <button onclick="spostaGiu(${b.id})">⬇️</button>
+
+      <button onclick="togglePreferito(${b.id}); render()">⭐</button>
+      <button onclick="rimuoviBrano(${b.id}); render()">❌</button>
+    </div>
+
+  </div>
+`).join("");
 }
 
 // ==============================
@@ -137,6 +143,31 @@ document.querySelectorAll("[data-action]").forEach(btn => {
   });
 });
 
+/**
+ * Sposta un brano verso l'alto nella playlist
+ *
+ * @param {number} id - ID del brano
+ */
+function spostaSu(id) {
+  const index = playlist.findIndex(b => b.id === id);
+  if (index > 0) {
+    [playlist[index - 1], playlist[index]] = [playlist[index], playlist[index - 1]];
+    render();
+  }
+}
+
+/**
+ * Sposta un brano verso il basso nella playlist
+ *
+ * @param {number} id - ID del brano
+ */
+function spostaGiu(id) {
+  const index = playlist.findIndex(b => b.id === id);
+  if (index < playlist.length - 1 && index !== -1) {
+    [playlist[index + 1], playlist[index]] = [playlist[index], playlist[index + 1]];
+    render();
+  }
+}
 // ==============================
 // FORM HANDLER
 // ==============================
