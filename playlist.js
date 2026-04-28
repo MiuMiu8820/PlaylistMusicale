@@ -74,9 +74,13 @@ document.querySelectorAll("[data-action]").forEach(btn => {
     }
 
     if (action === "clear") {
-      playlist = [];
-      render();
-    }
+  playlist = [];
+  render();
+
+  const box = document.getElementById("total-duration");
+  box.classList.add("hidden");
+  box.textContent = "";
+}
   });
 });
 
