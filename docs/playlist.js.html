@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: playlist.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: playlist.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @fileoverview Playlist Manager
+ * Sistema di gestione playlist musicale lato browser.
+ * Permette inserimento, rimozione, preferiti, calcolo durata e rendering UI.
+ *
+ * NON modifica il DOM esterno, usa solo funzioni interne e render().
+ *
+ * @version 1.0.0
+ */
+
+// ==============================
+// STATO GLOBALE
+// ==============================
+
+/**
+ * Array contenente tutti i brani della playlist
+ * @type {Array&lt;Object>}
+ */
+let playlist = [];
+
+// ==============================
+// CORE FUNCTIONS
+// ==============================
+
+/**
+ * Aggiunge un nuovo brano alla playlist
+ *
+ * @param {string} titolo - Titolo del brano
+ * @param {string} artista - Nome artista
+ * @param {number} durata - Durata in secondi
+ */
+function inserisciBrano(titolo, artista, durata) {
+  playlist.push({
+    id: Date.now(),
+    titolo,
+    artista,
+    durata,
+    preferito: false
+  });
+}
+
+/**
+ * Rimuove un brano dalla playlist tramite ID
+ *
+ * @param {number} id - ID del brano da eliminare
+ */
+function rimuoviBrano(id) {
+  playlist = playlist.filter(b => b.id !== id);
+}
+
+/**
+ * Attiva/disattiva stato preferito di un brano
+ *
+ * @param {number} id - ID del brano
+ */
+function togglePreferito(id) {
+  const b = playlist.find(x => x.id === id);
+  if (b) b.preferito = !b.preferito;
+}
+
+/**
+ * Calcola la durata totale della playlist
+ *
+ * @returns {number} durata totale in secondi
+ */
+function calcolaDurataTotale() {
+  return playlist.reduce((a, b) => a + b.durata, 0);
+}
+
+// ==============================
+// RENDER UI
+// ==============================
+
+/**
+ * Aggiorna la UI della playlist nel DOM
+ */
+function render() {
+  const list = document.getElementById("playlist");
+  const count = document.getElementById("playlist-count");
+
+  count.textContent = playlist.length;
+
+  if (playlist.length === 0) {
+    list.innerHTML = `&lt;div class="empty">Nessun brano nella playlist&lt;/div>`;
+    return;
+  }
+
+  list.innerHTML = playlist.map(b => `
+    &lt;div class="playlist-item ${b.preferito ? "favorite" : ""}">
+      &lt;div>
+        &lt;b>${b.titolo}&lt;/b> - ${b.artista}
+      &lt;/div>
+
+      &lt;div>
+        ${b.durata}s
+        &lt;button onclick="togglePreferito(${b.id}); render()">⭐&lt;/button>
+        &lt;button onclick="rimuoviBrano(${b.id}); render()">❌&lt;/button>
+      &lt;/div>
+    &lt;/div>
+  `).join("");
+}
+
+// ==============================
+// EVENTI UI
+// ==============================
+
+/**
+ * Gestione eventi bottoni sidebar
+ */
+document.querySelectorAll("[data-action]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const action = btn.dataset.action;
+
+    if (action === "add") {
+      document.getElementById("add-form").classList.remove("hidden");
+    }
+
+    if (action === "play") {
+      alert("▶ Riproduzione playlist...");
+    }
+
+    if (action === "duration") {
+      document.getElementById("total-duration").classList.remove("hidden");
+      document.getElementById("total-duration").textContent =
+        "Durata totale: " + calcolaDurataTotale() + " sec";
+    }
+
+    if (action === "clear") {
+      playlist = [];
+      render();
+
+      // reset UI durata
+      const box = document.getElementById("total-duration");
+      box.classList.add("hidden");
+      box.textContent = "";
+    }
+  });
+});
+
+// ==============================
+// FORM HANDLER
+// ==============================
+
+/**
+ * Gestione submit form aggiunta brano
+ */
+document.getElementById("add-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  inserisciBrano(
+    document.getElementById("title-input").value,
+    document.getElementById("artist-input").value,
+    Number(document.getElementById("duration-input").value)
+  );
+
+  e.target.reset();
+  e.target.classList.add("hidden");
+  render();
+});
+
+/**
+ * Chiude il form di inserimento
+ */
+document.getElementById("cancel").addEventListener("click", () => {
+  document.getElementById("add-form").classList.add("hidden");
+});
+
+// ==============================
+// INIT APP
+// ==============================
+
+/**
+ * Avvia l'applicazione
+ */
+render();</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#calcolaDurataTotale">calcolaDurataTotale</a></li><li><a href="global.html#inserisciBrano">inserisciBrano</a></li><li><a href="global.html#playlist">playlist</a></li><li><a href="global.html#render">render</a></li><li><a href="global.html#rimuoviBrano">rimuoviBrano</a></li><li><a href="global.html#togglePreferito">togglePreferito</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Apr 28 2026 20:39:22 GMT+0200 (Ora legale dell’Europa centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
