@@ -181,7 +181,7 @@ header h1 {
     text-align: center;
 }
 
-/* SCROLLBAR (figo) */
+
 ::-webkit-scrollbar {
     width: 8px;
 }
